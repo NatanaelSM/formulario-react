@@ -1,11 +1,11 @@
-import { FormControl, FormLabel, Input, Stack, InputGroup, InputLeftAddon, HStack, Radio, RadioGroup, Box, Button } from '@chakra-ui/react'
+import { FormControl, FormLabel, Input, Stack, InputGroup, InputLeftAddon, Select, Flex, Button, Box } from '@chakra-ui/react'
 import { useState } from 'react'
+import PropTypes from "prop-types";
 
 
-const Formulario = () => {
+const Formulario = ({ reloadClientes }) => {
 
     const [form, setForm] = useState({
-        id: 1,
         nomeCompleto: '',
         cpf: '',
         sexo: '',
@@ -24,14 +24,23 @@ const Formulario = () => {
         e.preventDefault()
 
         const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-        
-        const novoCliente = { ...form };
+
+        console.log(clientes);
+        let idCliente
+        if (clientes.length > 0) {
+            idCliente = clientes[clientes.length - 1].id + 1
+        } else {
+            idCliente = 1
+        }
+
+        const novoCliente = { ...form, id: idCliente };
         clientes.push(novoCliente);
 
         localStorage.setItem('clientes', JSON.stringify(clientes));
 
+        console.log(clientes);
         setForm({
-            id: form.id + 1, 
+            id: '',
             nomeCompleto: '',
             cpf: '',
             sexo: '',
@@ -42,65 +51,76 @@ const Formulario = () => {
 
         alert('Cliente cadastrado com sucesso!');
         e.target.reset()
+        reloadClientes()
     }
 
     return (
-        <Box
+        <Flex
+            justifyContent='center'
+            alignItems='center'
             w='100%'
             h='100%'>
-            <form onSubmit={handleSubmit}>
-                <Stack
-                    spacing='15px'
-                    w='50%'>
-                    <FormControl>
-                        <FormLabel htmlFor="nome" >Nome Completo</FormLabel>
-                        <Input onChange={handleChange} bg='white' type='text' placeholder='Digite aqui...' size='md' id='nome' name='nomeCompleto' />
-                    </FormControl>
+            <Box
+                width="100%"
+                maxWidth="500px">
+                <form
+                    onSubmit={handleSubmit}>
+                    <Stack
+                        spacing='15px'
+                        w='100%'>
+                        <FormControl isRequired>
+                            <FormLabel htmlFor="nome" >Nome Completo</FormLabel>
+                            <Input onChange={handleChange} bg='white' type='text' placeholder='Digite aqui...' size='md' id='nome' name='nomeCompleto' />
+                        </FormControl>
 
-                    <FormControl>
-                        <FormLabel htmlFor="cpf">CPF</FormLabel>
-                        <Input onChange={handleChange} bg='white' placeholder='123.456.789-10' type='number' size='md' id='cpf' name='cpf' />
-                    </FormControl>
+                        <FormControl isRequired>
+                            <FormLabel htmlFor="cpf">CPF</FormLabel>
+                            <Input onChange={handleChange} bg='white' placeholder='123.456.789-10' type='number' size='md' id='cpf' name='cpf' />
+                        </FormControl>
 
-                    <FormControl>
-                        <FormLabel>Sexo</FormLabel>
-                        <RadioGroup name="sexo">
-                            <HStack
-                                spacing='5px'>
-                                <Radio onChange={handleChange} value='Masculino'>Masculino</Radio>
-                                <Radio onChange={handleChange} value='Feminino'>Feminino</Radio>
-                            </HStack>
-                        </RadioGroup>
-                    </FormControl>
+                        <FormControl isRequired>
+                            <FormLabel>Sexo</FormLabel>
+                            <Select onChange={handleChange} name='sexo' bg='white' placeholder='Selecione uma opção...'>
+                                <option value='Masculino'>Masculino</option>
+                                <option value='Feminino'>Feminino</option>
+                            </Select>
+                        </FormControl>
 
-                    <FormControl>
-                        <FormLabel htmlFor='data'>Data De Nascimento</FormLabel>
-                        <Input bg='white' onChange={handleChange} type='date' size='md' id='data' name='dataAniversario' />
-                    </FormControl>
 
-                    <FormControl>
-                        <FormLabel htmlFor="email">Email</FormLabel>
-                        <InputGroup>
-                            <InputLeftAddon>@</InputLeftAddon>
-                            <Input onChange={handleChange} bg='white' type='email' placeholder='email@email.com' size='md' id='email' name='email' />
-                        </InputGroup>
-                    </FormControl>
+                        <FormControl isRequired>
+                            <FormLabel htmlFor='data'>Data De Nascimento</FormLabel>
+                            <Input bg='white' onChange={handleChange} type='date' size='md' id='data' name='dataAniversario' />
+                        </FormControl>
 
-                    <FormControl>
-                        <FormLabel htmlFor="cel">Celular</FormLabel>
-                        <InputGroup>
-                            <InputLeftAddon>+55</InputLeftAddon>
-                            <Input onChange={handleChange} bg='white' type='tel' placeholder='12 999999999' size='md' id='cel' name='celular' />
-                        </InputGroup>
-                    </FormControl>
+                        <FormControl isRequired>
+                            <FormLabel htmlFor="email">Email</FormLabel>
+                            <InputGroup>
+                                <InputLeftAddon>@</InputLeftAddon>
+                                <Input onChange={handleChange} bg='white' type='email' placeholder='email@email.com' size='md' id='email' name='email' />
+                            </InputGroup>
+                        </FormControl>
 
-                    <Button type='submit' colorScheme='blue' variant='solid'>
-                        Cadastrar
-                    </Button>
-                </Stack>
-            </form>
-        </Box>
+                        <FormControl isRequired>
+                            <FormLabel htmlFor="cel">Celular</FormLabel>
+                            <InputGroup>
+                                <InputLeftAddon>+55</InputLeftAddon>
+                                <Input onChange={handleChange} bg='white' type='tel' placeholder='12 999999999' size='md' id='cel' name='celular' />
+                            </InputGroup>
+                        </FormControl>
+
+                        <Button type='submit' colorScheme='blue' variant='solid'>
+                            Cadastrar
+                        </Button>
+                    </Stack>
+                </form>
+            </Box>
+
+        </Flex>
     )
+}
+
+Formulario.propTypes = {
+    reloadClientes: PropTypes.func
 }
 
 export default Formulario
